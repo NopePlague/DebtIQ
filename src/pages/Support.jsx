@@ -12,10 +12,8 @@ function Support() {
 
   return (
     <div className="h-screen w-full bg-white font-sans overflow-hidden flex flex-col ">
-      {/* Icon Support Link */}
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
       
-      {/* Navbar - Clean white background for contrast */}
       <header className="bg-white border-b border-slate-100 sticky top-0 z-50">
         <div className="flex justify-between items-center h-20 px-16 w-full">
           <div className="text-4xl font-bold tracking-tighter text-[#182820] font-medium">
@@ -35,12 +33,9 @@ function Support() {
         </div>
       </header>
 
-      {/* Main Body - Restored your bg-slate-200/50 sanctuary contrast */}
       <main className="flex-1 overflow-y-auto bg-slate-200/50 custom-scrollbar">
         
-        {/* Hero Section - Matching Reference Gradient */}
         <section className="bg-[radial-gradient(circle_at_top_right,#d4e7da_0%,#f6faff_70%)] py-20 px-16 relative">
-          {/* Background Dot Pattern[cite: 2] */}
           <div className="absolute inset-0 z-0 opacity-30 bg-[radial-gradient(circle_at_2px_2px,rgba(24,40,32,0.1)_1px,transparent_0)] bg-[length:40px_40px]"></div>
           
           <div className="max-w-4xl mx-auto text-center space-y-8 relative z-10">
@@ -59,7 +54,6 @@ function Support() {
           </div>
         </section>
 
-        {/* Category Grid - Using your rounded-3xl geometry[cite: 1, 2] */}
         <section className="max-w-7xl mx-auto py-16 px-16">
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
             {categories.map((cat) => (
@@ -74,7 +68,6 @@ function Support() {
           </div>
         </section>
 
-        {/* Contact Section - Emerald-950 sanctuary card[cite: 1, 2] */}
         <section className="max-w-7xl mx-auto px-16 mb-20">
           <div className="bg-[#182820] text-white rounded-[3rem] p-16 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-12">
             <div className="relative z-10 max-w-xl text-left">
@@ -97,12 +90,10 @@ function Support() {
                 Browse Forum <span className="material-symbols-outlined group-hover:translate-x-2 transition-transform">arrow_forward</span>
               </Link>
             </div>
-            {/* Sanctuary decorative blur[cite: 1, 2] */}
             <div className="absolute -right-20 -bottom-20 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
           </div>
         </section>
 
-        {/* Footer[cite: 2] */}
         <footer className="bg-white py-12 px-16 border-t border-slate-100">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 max-w-7xl mx-auto">
             <div className="text-xl font-bold text-[#182820]">DebtIQ</div>

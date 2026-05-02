@@ -1,12 +1,11 @@
 import React from 'react'
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 function SignUp() {
+    const navigate=useNavigate();
   return (
-    // h-screen and overflow-hidden to prevent any scrolling[cite: 1]
     <div className="h-screen w-full bg-slate-50 font-sans overflow-hidden flex flex-col">
-      
-      {/* Navbar - Matches your Home page layout[cite: 1] */}
+
       <nav className='py-3 flex px-16 z-10'>
         <div className="flex items-center justify-center flex-1 md:-ml-8">
           <Link to="/">
@@ -23,14 +22,11 @@ function SignUp() {
         </div>
       </nav>
 
-      {/* Main Container - Split Layout[cite: 1] */}
       <main className="flex-1 flex items-center justify-center bg-slate-200/50 px-10 pb-10">
         
         <div className="flex w-full max-w-6xl h-[90%] bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden">
           
-          {/* Left Side: Supportive Hero[cite: 1] */}
           <div className="hidden lg:flex flex-1 relative bg-emerald-950 p-12 flex flex-col justify-center overflow-hidden">
-            {/* Background Image[cite: 1] */}
             <div className="absolute inset-0 opacity-10 pointer-events-none">
               <img 
                 className="w-full h-full object-cover" 
@@ -39,7 +35,6 @@ function SignUp() {
               />
             </div>
 
-            {/* Hero Content[cite: 1] */}
             <div className="relative z-10 space-y-6">
               <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-800/50 rounded-2xl shadow-lg">
                 <span className="text-white text-4xl">🌿</span>
@@ -68,7 +63,6 @@ function SignUp() {
             </div>
           </div>
 
-          {/* Right Side: The Registration Form[cite: 1] */}
           <div className="flex-1 flex flex-col justify-center px-12 md:px-20 relative overflow-y-auto">
             <div className="mb-10">
               <h2 className="text-4xl font-bold text-emerald-950">Create Account</h2>
@@ -103,7 +97,7 @@ function SignUp() {
                 />
               </div>
 
-              <button className='mt-4 bg-emerald-950 text-white py-4 font-bold rounded-2xl hover:bg-emerald-950/90 active:bg-emerald-950/80 transition-all shadow-lg shadow-emerald-950/10 cursor-pointer'>
+              <button onClick={()=> navigate("/dashboard")} className='mt-4 bg-emerald-950 text-white py-4 font-bold rounded-2xl hover:bg-emerald-950/90 active:bg-emerald-950/80 transition-all shadow-lg shadow-emerald-950/10 cursor-pointer'>
                 Create Account
               </button>
             </form>

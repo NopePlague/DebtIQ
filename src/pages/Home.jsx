@@ -17,16 +17,34 @@ function Home() {
         <div className='flex-4 my-auto'>
           <ul className='flex justify-center gap-7'>
 
-            {["features", "insights", "pricing", "support"].map((item) => (
-              <li key={item} className="group">
-                <a href={`#${item}`} className="relative inline-block transition-all duration-300 hover:-translate-y-1 hover:text-black capitalize">
-                  {item}
-                  <span className="absolute left-1/2 -bottom-1 h-[2px] w-full bg-black 
-                  transform -translate-x-1/2 scale-x-0 origin-center 
-                  transition-transform duration-300 
-                  group-hover:scale-x-100"></span>
-                </a>
-              </li>
+            {["features", "insights", "pricing", "support"].map((item, index) => (
+              index < 3 ? (
+                <li key={item} className="group">
+                  <a
+                    href={`#${item}`}
+                    className="relative inline-block transition-all duration-300 hover:-translate-y-1 hover:text-black capitalize"
+                  >
+                    {item}
+                    <span className="absolute left-1/2 -bottom-1 h-[2px] w-full bg-black 
+                    transform -translate-x-1/2 scale-x-0 origin-center 
+                    transition-transform duration-300 
+                    group-hover:scale-x-100"></span>
+                  </a>
+                </li>
+              ) : (
+                <li key={item} className="group">
+                  <Link
+                    to="/support"
+                    className="relative inline-block transition-all duration-300 hover:-translate-y-1 hover:text-black capitalize"
+                  >
+                    {item}
+                    <span className="absolute left-1/2 -bottom-1 h-[2px] w-full bg-black 
+                    transform -translate-x-1/2 scale-x-0 origin-center 
+                    transition-transform duration-300 
+                    group-hover:scale-x-100"></span>
+                  </Link>
+                </li>
+              )
             ))}
 
           </ul>

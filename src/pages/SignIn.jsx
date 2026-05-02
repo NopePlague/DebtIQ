@@ -1,12 +1,11 @@
 import React from 'react'
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 function SignIn() {
+    const navigate=useNavigate()
   return (
-    // Locked height and no scroll to maintain the dashboard feel[cite: 1, 2]
     <div className="h-screen w-full bg-white font-sans overflow-hidden flex flex-col">
       
-      {/* Navbar - Clean white background to create contrast[cite: 1, 2] */}
       <nav className='py-3 flex px-16 z-10'>
               <div className="flex items-center justify-center flex-1 md:-ml-8">
                 <Link to="/">
@@ -23,15 +22,12 @@ function SignIn() {
               </div>
             </nav>
 
-      {/* Body Page - Restored your bg-slate-200/50 contrast[cite: 1, 2] */}
       <main className="relative z-10 flex-1 flex items-center justify-center bg-slate-200/50 px-16 py-6 pb-20">
         
-        {/* Background Dot Pattern from the design[cite: 2] */}
         <div className="absolute inset-0 z-0 pointer-events-none opacity-30 bg-[radial-gradient(circle_at_2px_2px,rgba(24,40,32,0.1)_1px,transparent_0)] bg-[length:40px_40px]"></div>
 
         <div className="relative w-full max-w-4xl flex items-center justify-center">
           
-          {/* Center Card[cite: 2] */}
           <div className="w-full max-w-[480px] bg-white rounded-[2.5rem] shadow-[0_30px_60px_rgba(24,40,32,0.05)] p-12 flex flex-col items-center">
             <div className="text-center mb-10">
               <h1 className="text-4xl font-bold text-[#182820] mb-3">Welcome Back</h1>
@@ -62,12 +58,11 @@ function SignIn() {
                 />
               </div>
 
-              <button className="w-full bg-[#182820] text-white py-5 rounded-full font-bold text-lg hover:opacity-90 active:scale-[0.98] transition-all shadow-lg mt-4 cursor-pointer">
+              <button onClick={()=> navigate("/dashboard")} className="w-full bg-[#182820] text-white py-5 rounded-full font-bold text-lg hover:opacity-90 active:scale-[0.98] transition-all shadow-lg mt-4 cursor-pointer">
                 Sign In
               </button>
             </form>
 
-            {/* Divider[cite: 2] */}
             <div className="relative w-full my-8 flex items-center justify-center">
               <div className="absolute w-full border-t border-gray-200"></div>
               <span className="relative bg-white px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Or continue with</span>
@@ -92,7 +87,6 @@ function SignIn() {
         </div>
       </main>
 
-      {/* Footer[cite: 2] */}
       <footer className="relative z-10 w-full px-16 py-10 bg-white border-t border-gray-100 flex justify-between items-center text-sm font-medium text-gray-500">
         <div className="flex gap-10">
           <div className="text-lg font-bold text-[#182820] mr-6">DebtIQ</div>
