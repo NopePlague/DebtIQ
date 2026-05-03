@@ -7,7 +7,7 @@ import warning from "./../assets/svg/warning.svg"
 function Home() {
   return (
     <div>
-      <nav className='py-3 flex'>
+      <nav className='py-3 flex '>
         <div className="flex items-center justify-center flex-2 md:-ml-8">
           <h1 className="font-bebas text-4xl tracking-wider text-gray-900 font-medium">
             Debt<span className="text-green-950">IQ</span>
