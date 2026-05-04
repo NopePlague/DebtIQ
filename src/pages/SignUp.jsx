@@ -1,8 +1,32 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link, useNavigate } from "react-router-dom"
 
 function SignUp() {
-    const navigate=useNavigate();
+  const navigate = useNavigate();
+
+  // State for form inputs
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  // Simple Email Regex for validation
+  const validateEmail = (email) => {
+    return String(email)
+      .toLowerCase()
+      .match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+  };
+
+  const handleSignUp = (e) => {
+    e.preventDefault(); // Prevent form reload
+
+    // Criteria: Valid email and Password length >= 6
+    if (validateEmail(email) && password.length >= 6) {
+      navigate("/dashboard");
+    } else {
+      alert("Please enter a valid email and a password with at least 6 characters.");
+    }
+  };
+
   return (
     <div className="h-screen w-full bg-slate-50 font-sans overflow-hidden flex flex-col">
 
@@ -69,13 +93,16 @@ function SignUp() {
               <p className="text-gray-500 mt-2">Begin your path to financial wellness.</p>
             </div>
 
-            <form className="flex flex-col gap-5">
+            <form className="flex flex-col gap-5" onSubmit={handleSignUp}>
               <div className="flex flex-col gap-2">
                 <label className="font-bold text-emerald-950 ml-1 text-sm uppercase tracking-wider">Full Name</label>
                 <input 
                   type="text" 
                   placeholder="Alex Johnson"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
                   className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-emerald-950 transition-all"
+                  required
                 />
               </div>
 
@@ -84,7 +111,10 @@ function SignUp() {
                 <input 
                   type="email" 
                   placeholder="name@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-emerald-950 transition-all"
+                  required
                 />
               </div>
 
@@ -93,11 +123,17 @@ function SignUp() {
                 <input 
                   type="password" 
                   placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-emerald-950 transition-all"
+                  required
                 />
               </div>
 
-              <button onClick={()=> navigate("/dashboard")} className='mt-4 bg-emerald-950 text-white py-4 font-bold rounded-2xl hover:bg-emerald-950/90 active:bg-emerald-950/80 transition-all shadow-lg shadow-emerald-950/10 cursor-pointer'>
+              <button 
+                type="submit" 
+                className='mt-4 bg-emerald-950 text-white py-4 font-bold rounded-2xl hover:bg-emerald-950/90 active:bg-emerald-950/80 transition-all shadow-lg shadow-emerald-950/10 cursor-pointer'
+              >
                 Create Account
               </button>
             </form>
