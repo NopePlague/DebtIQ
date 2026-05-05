@@ -128,7 +128,7 @@ function Home() {
                   <p className='text-white font-bold text-2xl'>Optimized PayOff</p>
                   <p className='text-gray-400'>AI-driven strategies that identify the most interest heavy debt first, saving you thousands over your journey.</p>
                   <div className='relative w-full p-1 bg-gray-500 rounded-full mt-4'>
-                    <div className='absolute w-[75%] p-1 bg-amber-700 rounded-full top-0 left-0'></div>
+                    <div className='absolute w-[75%] p-1 bg-amber-600 rounded-full top-0 left-0'></div>
                   </div>
                   <p className='text-gray-400/70 text-xs'>75% Interest reduction target reached</p>
               </div>
