@@ -50,7 +50,7 @@ function Home() {
 
         <div className='flex items-center gap-4 md:gap-10 whitespace-nowrap'>
           <p className="hidden sm:block"><Link to="/signin">Sign In</Link></p>
-          <Link to="/signup">
+          <Link to="/dashboard">
             <button className='bg-emerald-950 text-white px-4 py-2 rounded-full hover:bg-emerald-950/90 active:bg-emerald-950/80 transition-all text-sm md:text-base'>
               Get Started
             </button>
