@@ -8,6 +8,7 @@ function Calender() {
 
   const year = currentDate.getFullYear()
   const month = currentDate.getMonth()
+  const todayDate = today.getDate()
 
   const monthName = currentDate.toLocaleString("default", {
     month: "long"
@@ -25,7 +26,6 @@ function Calender() {
 
   const paidDays = [5, 9]
   const urgentDays = [12]
-  const upcomingDays = dates.filter(d => d && !paidDays.includes(d) && !urgentDays.includes(d))
 
   return (
     <div className="bg-slate-200/50 flex-1 p-4 sm:p-8 overflow-y-auto relative h-screen">
@@ -79,6 +79,7 @@ function Calender() {
               {dates.map((date, index) => {
                 const isPaid = paidDays.includes(date)
                 const isUrgent = urgentDays.includes(date)
+                const isToday = date === todayDate
 
                 return (
                   <div
@@ -86,6 +87,8 @@ function Calender() {
                     onClick={() => date && setSelectedDate(date)}
                     className={`relative h-12 flex items-center justify-center rounded-xl text-sm font-medium cursor-pointer
                       ${date === selectedDate
+                        ? "bg-gray-600 text-white"
+                        : isToday
                         ? "bg-green-950 text-white"
                         : "bg-slate-100 text-gray-600"
                       }`}
