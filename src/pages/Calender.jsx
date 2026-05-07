@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 function Calender() {
   const today = new Date()
@@ -126,7 +126,7 @@ function Calender() {
             </p>
 
             <p className="text-4xl font-bold text-gray-800 mt-4">
-              $1,240
+              ₹1,240
             </p>
             <p className="text-gray-500 text-sm">Due</p>
 
@@ -135,8 +135,8 @@ function Calender() {
             </div>
 
             <div className="flex justify-between text-sm text-gray-500 mt-2">
-              <p>Paid: $558</p>
-              <p>Remaining: $682</p>
+              <p>Paid: ₹558</p>
+              <p>Remaining: ₹682</p>
             </div>
           </div>
 
@@ -152,7 +152,7 @@ function Calender() {
                   Auto Loan
                 </p>
                 <p className="text-red-700 font-bold">
-                  $350 • Due Today
+                  ₹350 • Due Today
                 </p>
               </div>
 
@@ -170,7 +170,7 @@ function Calender() {
                   Mortgage
                 </p>
                 <p className="text-gray-500 text-sm">
-                  $800 • Oct 15
+                  ₹800 • Oct 15
                 </p>
               </div>
 

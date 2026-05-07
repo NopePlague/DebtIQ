@@ -1,187 +1,113 @@
-import { calculateEMI, validateLoanData } from '../utils/emiCalculator';
+import axios from 'axios';
 
-const STORAGE_KEY = 'debtiq_loans';
+// Prefer same-origin `/api` so Vite can proxy in dev and deployments can serve via one origin.
+// Override with `VITE_API_BASE_URL` when needed (e.g., `http://localhost:3001/api`).
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
-// Helper to simulate API delay
-const delay = (ms = 300) => new Promise(resolve => setTimeout(resolve, ms));
+const api = axios.create({
+    baseURL: API_BASE_URL,
+    headers: {
+        'Content-Type': 'application/json'
+    }
+});
 
-// Helper to get loans from local storage
-const getLocalLoans = () => {
-  const data = localStorage.getItem(STORAGE_KEY);
-  return data ? JSON.parse(data) : [];
+// Request interceptor to add the auth token to headers
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('debtiq_token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
+// Auth API calls
+export const authAPI = {
+    login: async (credentials) => {
+        try {
+            const response = await api.post('/auth/login', credentials);
+            if (response.data.token) {
+                localStorage.setItem('debtiq_token', response.data.token);
+                localStorage.setItem('debtiq_user', JSON.stringify(response.data.user));
+            }
+            return response.data;
+        } catch (error) {
+            // Only fall back to mock auth when the backend is unreachable (network error).
+            // If the backend responds with a 4xx/5xx, surface that error to the UI.
+            if (error?.response) {
+                const message = error.response.data?.error || 'Login failed';
+                throw new Error(message, { cause: error });
+            }
+
+            // Mock Bypass: Login anyway (offline/dev mode)
+            const mockUser = { 
+                id: 'mock-id-' + (credentials.email || 'guest'), 
+                username: credentials.email?.split('@')[0] || 'Guest', 
+                email: credentials.email || 'guest@example.com' 
+            };
+            const mockToken = 'mock-jwt-token';
+            localStorage.setItem('debtiq_token', mockToken);
+            localStorage.setItem('debtiq_user', JSON.stringify(mockUser));
+            return { success: true, token: mockToken, user: mockUser };
+        }
+    },
+
+    signup: async (userData) => {
+        try {
+            const response = await api.post('/auth/signup', userData);
+            if (response.data.token) {
+                localStorage.setItem('debtiq_token', response.data.token);
+                localStorage.setItem('debtiq_user', JSON.stringify(response.data.user));
+            }
+            return response.data;
+        } catch (error) {
+            if (error?.response) {
+                const message = error.response.data?.error || 'Signup failed';
+                throw new Error(message, { cause: error });
+            }
+
+            // Mock Bypass: Signup anyway (offline/dev mode)
+            const mockUser = { 
+                id: 'mock-id-' + (userData.email || 'guest'), 
+                username: userData.username || 'Guest', 
+                email: userData.email || 'guest@example.com' 
+            };
+            const mockToken = 'mock-jwt-token';
+            localStorage.setItem('debtiq_token', mockToken);
+            localStorage.setItem('debtiq_user', JSON.stringify(mockUser));
+            return { success: true, token: mockToken, user: mockUser };
+        }
+    },
+    logout: () => {
+        localStorage.removeItem('debtiq_token');
+        localStorage.removeItem('debtiq_user');
+    },
+    getCurrentUser: () => {
+        const user = localStorage.getItem('debtiq_user');
+        return user ? JSON.parse(user) : null;
+    }
 };
 
-// Helper to save loans to local storage
-const saveLocalLoans = (loans) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(loans));
-};
-
-// Loan API mock calls using LocalStorage
+// Loan API calls
 export const loanAPI = {
-  // Get all loans
-  getAllLoans: async (sortBy = null) => {
-    await delay();
-    let loans = getLocalLoans();
-
-    // Apply sorting
-    if (sortBy) {
-      switch (sortBy) {
-        case 'dueDate':
-          loans.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
-          break;
-        case 'interest':
-          loans.sort((a, b) => b.annualRate - a.annualRate);
-          break;
-        case 'amount':
-          loans.sort((a, b) => b.principal - a.principal);
-          break;
-        case 'name':
-          loans.sort((a, b) => a.name.localeCompare(b.name));
-          break;
-        default:
-          break;
-      }
+    getAllLoans: async () => {
+        const response = await api.get('/loans');
+        return response.data;
+    },
+    createLoan: async (loanData) => {
+        const response = await api.post('/loans', loanData);
+        return response.data;
+    },
+    deleteLoan: async (id) => {
+        const response = await api.delete(`/loans/${id}`);
+        return response.data;
+    },
+    getLoanStats: async () => {
+        const response = await api.get('/loans/stats');
+        return response.data;
     }
-
-    return {
-      success: true,
-      data: loans
-    };
-  },
-
-  // Get specific loan
-  getLoanById: async (id) => {
-    await delay();
-    const loans = getLocalLoans();
-    const loan = loans.find(l => l.id === id);
-    
-    if (!loan) {
-      throw new Error('Loan not found');
-    }
-
-    return {
-      success: true,
-      data: loan
-    };
-  },
-
-  // Get loan statistics
-  getLoanStats: async () => {
-    await delay();
-    const loans = getLocalLoans();
-
-    const stats = {
-      totalLoans: loans.length,
-      activeLoans: loans.filter(l => l.status === 'active').length,
-      totalPrincipal: loans.reduce((sum, l) => sum + l.principal, 0),
-      totalMonthlyEMI: loans.filter(l => l.status === 'active').reduce((sum, l) => sum + l.monthlyEMI, 0),
-      totalInterest: loans.reduce((sum, l) => sum + l.totalInterest, 0)
-    };
-
-    // Round monetary values
-    stats.totalPrincipal = Math.round(stats.totalPrincipal * 100) / 100;
-    stats.totalMonthlyEMI = Math.round(stats.totalMonthlyEMI * 100) / 100;
-    stats.totalInterest = Math.round(stats.totalInterest * 100) / 100;
-
-    return {
-      success: true,
-      data: stats
-    };
-  },
-
-  // Create new loan
-  createLoan: async (loanData) => {
-    await delay();
-    validateLoanData(loanData);
-
-    const loans = getLocalLoans();
-    const emiDetails = calculateEMI(loanData.principal, loanData.annualRate, loanData.months);
-
-    const newLoan = {
-      id: crypto.randomUUID(),
-      name: loanData.name.trim(),
-      principal: loanData.principal,
-      annualRate: loanData.annualRate,
-      months: loanData.months,
-      startDate: loanData.startDate,
-      lender: loanData.lender.trim(),
-      monthlyEMI: emiDetails.monthlyEMI,
-      totalAmount: emiDetails.totalAmount,
-      totalInterest: emiDetails.totalInterest,
-      status: 'active',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-
-    loans.push(newLoan);
-    saveLocalLoans(loans);
-
-    return {
-      success: true,
-      data: newLoan,
-      message: 'Loan created successfully'
-    };
-  },
-
-  // Update loan
-  updateLoan: async (id, loanData) => {
-    await delay();
-    const loans = getLocalLoans();
-    const index = loans.findIndex(l => l.id === id);
-
-    if (index === -1) {
-      throw new Error('Loan not found');
-    }
-
-    const existingLoan = loans[index];
-    const updatedLoan = {
-      ...existingLoan,
-      ...loanData,
-      updatedAt: new Date().toISOString()
-    };
-
-    validateLoanData(updatedLoan);
-
-    // Recalculate EMI if principal, rate, or months changed
-    if (loanData.principal !== undefined || loanData.annualRate !== undefined || loanData.months !== undefined) {
-      const emiDetails = calculateEMI(updatedLoan.principal, updatedLoan.annualRate, updatedLoan.months);
-      updatedLoan.monthlyEMI = emiDetails.monthlyEMI;
-      updatedLoan.totalAmount = emiDetails.totalAmount;
-      updatedLoan.totalInterest = emiDetails.totalInterest;
-    }
-
-    loans[index] = updatedLoan;
-    saveLocalLoans(loans);
-
-    return {
-      success: true,
-      data: updatedLoan,
-      message: 'Loan updated successfully'
-    };
-  },
-
-  // Delete loan
-  deleteLoan: async (id) => {
-    await delay();
-    const loans = getLocalLoans();
-    const filteredLoans = loans.filter(l => l.id !== id);
-
-    if (filteredLoans.length === loans.length) {
-      throw new Error('Loan not found');
-    }
-
-    saveLocalLoans(filteredLoans);
-
-    return {
-      success: true,
-      message: 'Loan deleted successfully'
-    };
-  },
-
-  // Health check
-  checkHealth: async () => {
-    return { success: true, status: 'ok', storage: 'localStorage' };
-  }
 };
 
-export default loanAPI;
+export default api;

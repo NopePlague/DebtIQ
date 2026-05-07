@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate } from "react-router-dom"
+import { authAPI } from "../services/api"
 
 function SignUp() {
   const navigate = useNavigate();
@@ -14,13 +15,26 @@ function SignUp() {
       .match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
   };
 
-  const handleSignUp = (e) => {
-    e.preventDefault();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-    if (validateEmail(email) && password.length >= 6) {
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await authAPI.signup({ username: fullName, email, password });
       navigate("/dashboard");
-    } else {
-      alert("Please enter a valid email and a password with at least 6 characters.");
+    } catch (err) {
+      setError(err?.message || "Signup failed.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -88,6 +102,7 @@ function SignUp() {
             <div className="mb-10">
               <h2 className="text-4xl font-bold text-emerald-950">Create Account</h2>
               <p className="text-gray-500 mt-2">Begin your path to financial wellness.</p>
+              {error && <p className="mt-4 p-3 bg-red-50 text-red-600 rounded-xl text-sm border border-red-100">{error}</p>}
             </div>
 
             <form className="flex flex-col gap-5" onSubmit={handleSignUp}>
@@ -96,6 +111,8 @@ function SignUp() {
                 <input 
                   type="text" 
                   placeholder="Aditya Kumar Gupta"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
                   className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-emerald-950 transition-all"
                   required
                 />
@@ -127,9 +144,10 @@ function SignUp() {
 
               <button 
                 type="submit" 
-                className='mt-4 bg-emerald-950 text-white py-4 font-bold rounded-2xl hover:bg-emerald-950/90 active:bg-emerald-950/80 transition-all shadow-lg shadow-emerald-950/10 cursor-pointer'
+                disabled={loading}
+                className={`mt-4 bg-emerald-950 text-white py-4 font-bold rounded-2xl hover:bg-emerald-950/90 active:bg-emerald-950/80 transition-all shadow-lg shadow-emerald-950/10 cursor-pointer ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
-                Create Account
+                {loading ? "Creating Account..." : "Create Account"}
               </button>
             </form>
 

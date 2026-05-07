@@ -1,8 +1,15 @@
-import React from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { authAPI } from '../services/api'
 
 const Navbar = ({isSidebarOpen, setIsSidebarOpen}) => {
   const location = useLocation()
+  const navigate = useNavigate()
+  const user = authAPI.getCurrentUser()
+
+  const handleLogout = () => {
+    authAPI.logout()
+    navigate('/signin')
+  }
 
   const navItems = [
     { path: "/", name: "Home", icon: "https://www.svgrepo.com/show/453459/bank.svg" },
@@ -13,7 +20,7 @@ const Navbar = ({isSidebarOpen, setIsSidebarOpen}) => {
   ]
 
   return (
-    <div className={`bg-slate-200/50 text-white h-screen p-4 border-r border-gray-300 fixed top-0 left-0 z-10 ${isSidebarOpen ? "w-20" : "w-60"} transition-all duration-300`}>
+    <div className={`bg-slate-200/50 text-white h-screen p-4 border-r border-gray-300 fixed top-0 left-0 z-10 ${isSidebarOpen ? "w-20" : "w-60"} transition-all duration-300 flex flex-col justify-between`}>
       <ul className="flex flex-col gap-8">
         <li className="hover:cursor-pointer">
           <button
@@ -50,6 +57,30 @@ const Navbar = ({isSidebarOpen, setIsSidebarOpen}) => {
           </li>
         ))}
       </ul>
+
+      {user && (
+        <div className="flex flex-col gap-4 border-t border-gray-300 pt-6 mb-4">
+          <div className="flex items-center gap-3 px-1 overflow-hidden">
+             <div className="w-10 h-10 bg-emerald-950 rounded-full flex items-center justify-center text-white font-bold shrink-0 shadow-sm">
+                {user.username ? user.username[0].toUpperCase() : 'U'}
+             </div>
+             {!isSidebarOpen && (
+               <div className="flex flex-col overflow-hidden">
+                 <span className="text-black font-bold text-sm truncate">{user.username}</span>
+                 <span className="text-gray-500 text-[10px] truncate">{user.email}</span>
+               </div>
+             )}
+          </div>
+          <button 
+            onClick={handleLogout}
+            className={`flex items-center gap-3 p-2 rounded-xl text-red-600 hover:bg-red-50 transition-all font-bold ${isSidebarOpen ? 'justify-center' : ''}`}
+            title="Logout"
+          >
+            <img src="https://www.svgrepo.com/show/491212/logout.svg" className="h-6" alt="Logout" />
+            {!isSidebarOpen && <span>Logout</span>}
+          </button>
+        </div>
+      )}
     </div>
   )
 }
