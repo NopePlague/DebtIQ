@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate } from "react-router-dom"
+import { authAPI } from "../services/api"
 
 function SignIn() {
   const navigate = useNavigate();
@@ -7,20 +8,21 @@ function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const validateEmail = (email) => {
-    return String(email)
-      .toLowerCase()
-      .match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
-  };
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSignIn = (e) => {
+  const handleSignIn = async (e) => {
     e.preventDefault(); 
-    
-  
-    if (validateEmail(email) && password.length >= 6) {
+    setError("");
+
+    setLoading(true);
+    try {
+      await authAPI.login({ email, password });
       navigate("/dashboard");
-    } else {
-      alert("Please enter a valid email and a password with at least 6 characters.");
+    } catch (err) {
+      setError(err?.message || "Invalid email or password.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -55,6 +57,7 @@ function SignIn() {
               <p className="text-gray-500 max-w-[280px] mx-auto leading-relaxed">
                 Continue your journey toward financial clarity and peace of mind.
               </p>
+              {error && <p className="mt-4 p-3 bg-red-50 text-red-600 rounded-xl text-xs border border-red-100">{error}</p>}
             </div>
 
             <form className="w-full space-y-6" onSubmit={handleSignIn}>
@@ -87,9 +90,10 @@ function SignIn() {
 
               <button 
                 type="submit"
-                className="w-full bg-[#182820] text-white py-5 rounded-full font-bold text-lg hover:opacity-90 active:scale-[0.98] transition-all shadow-lg mt-4 cursor-pointer"
+                disabled={loading}
+                className={`w-full bg-[#182820] text-white py-5 rounded-full font-bold text-lg hover:opacity-90 active:scale-[0.98] transition-all shadow-lg mt-4 cursor-pointer ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
-                Sign In
+                {loading ? "Signing In..." : "Sign In"}
               </button>
             </form>
 

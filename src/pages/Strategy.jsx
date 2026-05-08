@@ -1,41 +1,35 @@
-import React from 'react';
 import warning from "./../assets/svg/warning.svg"
+
+const LegendItem = ({ color, label }) => (
+  <div className="flex items-center gap-2">
+    <span className={`w-3 h-3 rounded-full ${color}`}></span>
+    <span className="text-[12px] uppercase font-bold text-gray-500 tracking-tighter">{label}</span>
+  </div>
+);
+
+const ProgressRow = ({ label, value, width }) => (
+  <div className="flex flex-col gap-1">
+    <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider">
+      <span className="text-gray-400">{label}</span>
+      <span className="text-gray-800">{value}</span>
+    </div>
+    <div className="h-2 w-full bg-[#eaeef4] rounded-full overflow-hidden">
+      <div className={`h-full bg-[#b8cbbf] ${width}`}></div>
+    </div>
+  </div>
+);
+
+const SidebarInsight = ({ icon, title, desc }) => (
+  <div className="flex items-start gap-4">
+    <span className="material-symbols-outlined text-[#b8cbbf]">{icon}</span>
+    <div>
+      <p className="text-sm font-bold text-white">{title}</p>
+      <p className="text-xs text-gray-400">{desc}</p>
+    </div>
+  </div>
+);
+
 const Strategy = () => {
-  const SidebarLink = ({ icon, label, active = false }) => (
-    <a className={`flex items-center gap-4 px-6 py-4 rounded-[24px] transition-all ${active ? 'bg-emerald-900 text-white shadow-lg' : 'text-stone-600 hover:bg-white'}`} href="#">
-      <span className="material-symbols-outlined">{icon}</span>
-      <span className="text-[12px] uppercase font-bold tracking-widest">{label}</span>
-    </a>
-  );
-  
-  const LegendItem = ({ color, label }) => (
-    <div className="flex items-center gap-2">
-      <span className={`w-3 h-3 rounded-full ${color}`}></span>
-      <span className="text-[12px] uppercase font-bold text-gray-500 tracking-tighter">{label}</span>
-    </div>
-  );
-  
-  const ProgressRow = ({ label, value, width }) => (
-    <div className="flex flex-col gap-1">
-      <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider">
-        <span className="text-gray-400">{label}</span>
-        <span className="text-gray-800">{value}</span>
-      </div>
-      <div className="h-2 w-full bg-[#eaeef4] rounded-full overflow-hidden">
-        <div className={`h-full bg-[#b8cbbf] ${width}`}></div>
-      </div>
-    </div>
-  );
-  
-  const SidebarInsight = ({ icon, title, desc }) => (
-    <div className="flex items-start gap-4">
-      <span className="material-symbols-outlined text-[#b8cbbf]">{icon}</span>
-      <div>
-        <p className="text-sm font-bold text-white">{title}</p>
-        <p className="text-xs text-gray-400">{desc}</p>
-      </div>
-    </div>
-  );
   return (
     <div className="bg-[#f6faff] text-[#171c20] font-sans min-h-screen flex selection:bg-emerald-900/30">
       <main className="flex-1 flex flex-col min-h-screen">
@@ -57,14 +51,14 @@ const Strategy = () => {
                     <p className="text-sm text-gray-500">Projected trajectory to 2026</p>
                   </div>
                   <div className="flex flex-wrap gap-4">
-                    <LegendItem color="bg-[#182820]" label="Assets ($240k)" />
-                    <LegendItem color="bg-[#491200]" label="Debt ($76k)" />
+                    <LegendItem color="bg-[#182820]" label="Assets (₹240k)" />
+                    <LegendItem color="bg-[#491200]" label="Debt (₹76k)" />
                   </div>
                 </div>
 
                 <div className="relative h-80 w-full flex">
                   <div className="flex flex-col justify-between py-2 pr-4 text-right border-r border-gray-100 text-[10px] font-bold text-gray-400 w-14">
-                    <span>$300k</span><span>$225k</span><span>$150k</span><span>$75k</span><span>$0</span>
+                    <span>₹300k</span><span>₹225k</span><span>₹150k</span><span>₹75k</span><span>₹0</span>
                   </div>
                   <div className="flex-1 relative ml-4">
                     <div className="absolute inset-0 bg-slate-50/50 rounded-xl overflow-hidden border border-slate-100">
@@ -91,7 +85,7 @@ const Strategy = () => {
                     <img src="https://www.svgrepo.com/show/521525/bulb.svg" className='h-8'/>
                   </span>
                   <p className="text-sm text-gray-600">
-                    Based on your current $1,200 monthly repayment rate, you are projected to be debt-free by <span className="font-bold text-[#182820]">May 2026</span>.
+                    Based on your current ₹1,200 monthly repayment rate, you are projected to be debt-free by <span className="font-bold text-[#182820]">May 2026</span>.
                   </p>
                 </div>
               </section>
@@ -133,15 +127,15 @@ const Strategy = () => {
                   <h3 className="text-xl font-bold">Optimization Potential</h3>
                 </div>
                 <div className="mb-8">
-                  <div className="text-5xl font-bold text-[#d4e7da]">$4,250</div>
+                  <div className="text-5xl font-bold text-[#d4e7da]">₹4,250</div>
                   <p className="text-[10px] uppercase font-bold text-emerald-400/60 mt-1">Total estimated savings</p>
                 </div>
                 <div className="space-y-6 mb-8">
-                  <SidebarInsight icon="percent" title="$3,100 Interest Saved" desc="Reduced principal balances over time." />
+                  <SidebarInsight icon="percent" title="₹3,100 Interest Saved" desc="Reduced principal balances over time." />
                   <SidebarInsight icon="schedule" title="14 Months Earlier" desc="Estimated time shaved off your journey." />
                 </div>
                 <div className="pt-6 border-t border-white/10">
-                  <p className="text-xs text-[#b8cbbf] italic mb-6">"By adding just $150 to your monthly payment, you transform your timeline significantly."</p>
+                  <p className="text-xs text-[#b8cbbf] italic mb-6">"By adding just ₹150 to your monthly payment, you transform your timeline significantly."</p>
                   <button className="w-full bg-[#d4e7da] text-[#182820] font-bold py-4 rounded-xl hover:bg-white transition-all transform active:scale-95">
                     Apply Strategy Now
                   </button>
@@ -156,7 +150,7 @@ const Strategy = () => {
                   <h4 className="text-xs font-bold uppercase tracking-widest">Interest Alert</h4>
                 </div>
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  Your Visa Platinum card currently has the highest APR (24.9%). Focusing an extra $50/mo here saves an additional <span className="font-bold text-black">$120 this year</span>.
+                  Your Visa Platinum card currently has the highest APR (24.9%). Focusing an extra ₹50/mo here saves an additional <span className="font-bold text-black">₹120 this year</span>.
                 </p>
               </section>
             </div>

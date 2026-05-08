@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Plus,
   Home,
@@ -19,38 +19,21 @@ import {
   Cell,
   Tooltip
 } from "recharts";
+import { useLoanManager } from '../hooks/useLoanManager';
+import { authAPI } from '../services/api';
 
 
 function Dashboard() {
-
+  const { loans: backendLoans = [], stats: backendStats, createLoan: apiCreateLoan } = useLoanManager();
+  const user = authAPI.getCurrentUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const pieData = [
-    { name: "Principal", value: 72 },
-    { name: "Interest", value: 28 }
-  ]
-
-  const COLORS = ["#1a2e05", "#d9e7d3"]
-
-  const [loans, setLoans] = useState([
-    {
-      id: 1,
-      bank: "HDFC BANK",
-      type: "HOME LOAN",
-      amount: 1500000,
-      rate: 8.5,
-      emi: 25000,
-      duration: "15 Years"
-    }
-  ]);
-
   const [formData, setFormData] = useState({
     bank: '',
     type: 'Personal',
     amount: '',
     rate: '',
-    emi: '',
-    duration: ''
+    months: '', // Changed duration to months to match backend
+    startDate: new Date().toISOString().split('T')[0]
   });
 
   const data = [
@@ -123,32 +106,43 @@ function Dashboard() {
     return <Wallet size={20} />;
   };
 
-  const handleCreateLoan = (e) => {
+  const totalPrincipal = backendStats?.totalPrincipal ?? 0;
+  const totalInterest = backendStats?.totalInterest ?? 0;
+  const totalPayable = totalPrincipal + totalInterest;
+  const principalPct = totalPayable > 0 ? Math.round((totalPrincipal / totalPayable) * 100) : 0;
 
+  const pieData = [
+    { name: 'Principal', value: totalPrincipal },
+    { name: 'Interest', value: totalInterest },
+  ];
+
+  const COLORS = ['#1a2e05', '#d9e7d3'];
+
+  const handleCreateLoan = async (e) => {
     e.preventDefault();
+    try {
+      await apiCreateLoan({
+        name: `${formData.bank} ${formData.type}`,
+        principal: parseFloat(formData.amount),
+        annualRate: parseFloat(formData.rate),
+        months: parseInt(formData.months),
+        startDate: formData.startDate,
+        lender: formData.bank
+      });
 
-    const newLoan = {
-      id: Date.now(),
-      bank: formData.bank,
-      type: formData.type,
-      amount: parseFloat(formData.amount),
-      rate: parseFloat(formData.rate),
-      emi: parseFloat(formData.emi),
-      duration: formData.duration
-    };
+      setFormData({
+        bank: '',
+        type: 'Personal',
+        amount: '',
+        rate: '',
+        months: '',
+        startDate: new Date().toISOString().split('T')[0]
+      });
 
-    setLoans([newLoan, ...loans]);
-
-    setFormData({
-      bank: '',
-      type: 'Personal',
-      amount: '',
-      rate: '',
-      emi: '',
-      duration: ''
-    });
-
-    setIsModalOpen(false);
+      setIsModalOpen(false);
+    } catch (err) {
+      alert(err.message || 'Failed to add loan');
+    }
   };
 
   return (
@@ -160,11 +154,11 @@ function Dashboard() {
 
           <div>
             <h1 className="font-bold text-3xl md:text-4xl text-slate-900 mb-2">
-              Finance Architecture
+              Welcome, {user?.username || 'User'}
             </h1>
 
             <p className="text-sm md:text-lg text-slate-500">
-              Wealth Architecture | Dashboard Overview
+              Wealth Architecture | {user?.email}
             </p>
           </div>
 
@@ -190,7 +184,7 @@ function Dashboard() {
             </p>
 
             <h2 className='text-2xl font-bold text-slate-800 mt-1'>
-              {loans.length}
+              {backendLoans?.length || 0}
             </h2>
           </div>
 
@@ -204,7 +198,7 @@ function Dashboard() {
             </p>
 
             <h2 className='text-2xl font-bold text-slate-800 mt-1'>
-              ₹42,500
+              ₹{backendStats?.totalMonthlyEMI?.toLocaleString() || 0}
             </h2>
           </div>
 
@@ -214,11 +208,11 @@ function Dashboard() {
             </div>
 
             <p className='text-slate-500 mt-5 font-semibold'>
-              Outstanding Debt
+              Total Principal
             </p>
 
             <h2 className='text-2xl font-bold text-slate-800 mt-1'>
-              ₹18,40,000
+              ₹{backendStats?.totalPrincipal?.toLocaleString() || 0}
             </h2>
           </div>
 
@@ -321,7 +315,7 @@ function Dashboard() {
                     dataKey="value"
                     stroke="none"
                   >
-                    {data.map((entry, index) => (
+                    {pieData.map((entry, index) => (
                       <Cell
                         key={index}
                         fill={COLORS[index]}
@@ -352,7 +346,7 @@ function Dashboard() {
 
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                 <p className="text-5xl font-bold text-[#1a2e05]">
-                  72%
+                  {principalPct}%
                 </p>
 
                 <p className="text-sm text-slate-500 tracking-wide mt-1">
@@ -410,7 +404,7 @@ function Dashboard() {
 
             <div className='max-h-[400px] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden'>
 
-              {loans.map((loan) => (
+              {backendLoans.map((loan) => (
 
                 <div
                   key={loan.id}
@@ -420,28 +414,28 @@ function Dashboard() {
                   <div className='flex items-center gap-3'>
 
                     <div className='bg-green-100 p-2 rounded-xl text-green-950'>
-                      {getIcon(loan.type)}
+                      {getIcon(loan.name)}
                     </div>
 
                     <div>
                       <p className='font-bold text-sm'>
-                        {loan.type}
+                        {loan.name}
                       </p>
 
                       <p className='text-xs text-slate-500'>
-                        {loan.bank}
+                        {loan.lender}
                       </p>
                     </div>
 
                   </div>
 
                   <p className='font-semibold'>
-                    ₹{loan.amount.toLocaleString()}
+                    ₹{loan.principal.toLocaleString()}
                   </p>
 
-                  <p>{loan.rate}%</p>
+                  <p>{loan.annual_rate}%</p>
 
-                  <p>₹{loan.emi}</p>
+                  <p>₹{loan.monthly_emi.toLocaleString()}</p>
 
                   <div className='flex justify-start md:justify-center'>
                     <MoreVertical size={18} />
@@ -595,28 +589,17 @@ function Dashboard() {
               <input
                 required
                 type="number"
-                placeholder='Monthly EMI'
+                placeholder='Duration (Months)'
                 className='w-full bg-slate-50 p-4 rounded-2xl outline-none'
+                value={formData.months}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    emi: e.target.value
+                    months: e.target.value
                   })
                 }
               />
 
-              <input
-                required
-                type="text"
-                placeholder='Duration'
-                className='w-full bg-slate-50 p-4 rounded-2xl outline-none'
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    duration: e.target.value
-                  })
-                }
-              />
 
               <button
                 type='submit'

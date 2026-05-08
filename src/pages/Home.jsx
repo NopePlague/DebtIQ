@@ -1,4 +1,3 @@
-import React from 'react'
 import { Link } from "react-router-dom"
 import heroImage from "../assets/heroImage.png"
 import bellAlert from "./../assets/svg/bellAlert.svg"
@@ -170,11 +169,11 @@ function Home() {
               <div className='flex flex-col sm:flex-row justify-around gap-4 md:gap-10'>
                 <div className='flex-1 flex rounded-xl bg-black/20 p-4 border border-gray-700 flex-col gap-2 text-gray-400'>
                   <p>Total Debt</p>
-                  <p className='text-white text-3xl md:text-4xl z-10'>$43,200</p>
+                  <p className='text-white text-3xl md:text-4xl z-10'>₹43,200</p>
                 </div>
                 <div className='flex-1 flex rounded-xl bg-black/20 p-4 border border-gray-700 flex-col gap-2 text-gray-400'>
                   <p>Monthly Saved</p>
-                  <p className='text-amber-700 text-3xl md:text-4xl z-10'>$482</p>
+                  <p className='text-amber-700 text-3xl md:text-4xl z-10'>₹482</p>
                 </div>
                 <div className='flex-1 flex rounded-xl bg-black/20 p-4 border border-gray-700 flex-col gap-2 text-gray-400'>
                   <p>Health Score</p>
@@ -193,9 +192,9 @@ function Home() {
             <div className='flex-1 flex flex-col gap-5'>
               <p className='text-lg'>Priority Actions</p>
               {[
-                { label: 'Car Loan', val: '$320', color: 'bg-amber-600', w: 'w-[90%]' },
-                { label: 'Student Loan', val: '$12k', color: 'bg-emerald-300', w: 'w-[30%]' },
-                { label: 'Chase Visa', val: '$4k', color: 'bg-teal-400', w: 'w-[50%]' }
+                { label: 'Car Loan', val: '₹320', color: 'bg-amber-600', w: 'w-[90%]' },
+                { label: 'Student Loan', val: '₹12k', color: 'bg-emerald-300', w: 'w-[30%]' },
+                { label: 'Chase Visa', val: '₹4k', color: 'bg-teal-400', w: 'w-[50%]' }
               ].map((item, i) => (
                 <div key={i} className='flex rounded-xl bg-black/20 p-4 border border-gray-700 flex-col gap-4'>
                   <div className='flex justify-between text-gray-400 w-full'>
